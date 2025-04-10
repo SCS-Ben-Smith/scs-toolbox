@@ -9,23 +9,26 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
         <Image Name="LogoImage" Source="https://southcoastsystems.co.uk/wp-content/uploads/2020/12/scs-logo.jpg" Height="80" Margin="0,10" Grid.Row="0" HorizontalAlignment="Center"/>
-        
+
         <!-- Main Menu -->
-        <StackPanel Grid.Row="1" Margin="0,10" HorizontalAlignment="Center">
+        <StackPanel Name="MainMenu" Grid.Row="1" Margin="0,10" HorizontalAlignment="Center">
             <Button Name="btnRepairScripts" Content="Windows Repair Scripts" Width="200" Margin="0,5"/>
             <Button Name="btnDownloads" Content="Downloads" Width="200" Margin="0,5"/>
-            <Button Name="btnExit" Content="Exit" Width="200" Margin="0,5"/>
         </StackPanel>
 
         <!-- Dynamic Content Panel -->
         <StackPanel Name="contentPanel" Grid.Row="2" Margin="0,10" Visibility="Collapsed"/>
 
+        <!-- Exit Button -->
+        <Button Name="btnExit" Grid.Row="3" Content="Exit" Width="200" HorizontalAlignment="Center" Margin="0,10"/>
+
         <!-- Logs -->
-        <TextBox Name="logBox" Grid.Row="3" Background="Black" Foreground="White" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
+        <TextBox Name="logBox" Grid.Row="4" Background="Black" Foreground="White" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
     </Grid>
 </Window>
 "@
@@ -33,11 +36,12 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
+$MainMenu       = $window.FindName("MainMenu")
 $btnRepairScripts = $window.FindName("btnRepairScripts")
-$btnDownloads = $window.FindName("btnDownloads")
-$btnExit = $window.FindName("btnExit")
-$contentPanel = $window.FindName("contentPanel")
-$logBox = $window.FindName("logBox")
+$btnDownloads   = $window.FindName("btnDownloads")
+$btnExit        = $window.FindName("btnExit")
+$contentPanel   = $window.FindName("contentPanel")
+$logBox         = $window.FindName("logBox")
 
 function Show-Log {
     param($message)
@@ -46,6 +50,7 @@ function Show-Log {
 }
 
 function Show-WindowsRepairScripts {
+    $MainMenu.Visibility = 'Collapsed'
     $contentPanel.Children.Clear()
     $contentPanel.Visibility = 'Visible'
 
@@ -100,13 +105,18 @@ function Show-WindowsRepairScripts {
 }
 
 function Show-Downloads {
+    $MainMenu.Visibility = 'Collapsed'
     $contentPanel.Children.Clear()
     $contentPanel.Visibility = 'Visible'
 
     $label = New-Object System.Windows.Controls.TextBlock
     $label.Text = "Downloads page coming soon..."
     $label.Foreground = 'White'
+    $label.FontSize = 14
+    $label.Margin = "0,10"
+    $label.HorizontalAlignment = "Center"
     $contentPanel.Children.Add($label)
+
     Show-Log "Downloads page loaded."
 }
 
